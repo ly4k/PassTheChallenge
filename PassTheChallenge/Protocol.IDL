@@ -1,0 +1,57 @@
+[
+    uuid(31c30a71-1af8-4a9f-8076-f3d2599681ba),
+    version(1.0),
+    implicit_handle(handle_t hBinding)
+]
+interface PassTheChallenge
+{
+    import "ocidl.idl";
+
+#include "Constants.h"
+
+    int Ping();
+
+    int NtlmIumProtectCredential(
+        [in] DWORD64 ContextHandle,
+        [in] DWORD64 ProxyInfo,
+        [in] BYTE NTHash[MSV1_0_NT_OWF_PASSWORD_LENGTH],
+        [out] USHORT* EncryptedSize,
+        [out, size_is(, *EncryptedSize)] BYTE** EncryptedBlob
+    );
+
+    int NtlmIumLm20GetNtlm3ChallengeResponse(
+        [in] DWORD64 ContextHandle,
+        [in] DWORD64 ProxyInfo,
+        [in, string] WCHAR* UserName,
+        [in, string] WCHAR* LogonDomainName,
+        [in, string] WCHAR* ServerName,
+        [in, size_is(MSV1_0_CHALLENGE_LENGTH)] BYTE* ChallengeToClient,
+        [in] USHORT EncryptedSize,
+        [in, size_is(EncryptedSize)] BYTE* EncryptedBlob,
+        [out] BYTE UserSessionKey[MSV1_0_USER_SESSION_KEY_LENGTH],
+        [out] USHORT* Ntlm3ResponseLength,
+        [out, size_is(, *Ntlm3ResponseLength)] BYTE** Ntlm3Response
+    );
+
+    int NtlmIumCalculateNtResponse(
+        [in] DWORD64 ContextHandle,
+        [in] DWORD64 ProxyInfo,
+        [in, size_is(MSV1_0_CHALLENGE_LENGTH)] BYTE* ChallengeToClient,
+        [in] USHORT EncryptedSize,
+        [in, size_is(EncryptedSize)] BYTE* EncryptedBlob,
+        [out] BYTE Response[MSV1_0_RESPONSE_LENGTH]
+    );
+
+    int NtlmIumCompareCredentials(
+        [in] DWORD64 ContextHandle,
+        [in] DWORD64 ProxyInfo,
+        [in] USHORT EncryptedSize1,
+        [in, size_is(EncryptedSize1)] BYTE* EncryptedBlob1,
+        [in] BOOL IsEncrypted,
+        [in] USHORT EncryptedSize2,
+        [in, size_is(EncryptedSize2)] BYTE* EncryptedBlob2,
+        [out] BOOL *Matches
+    );
+
+    long Shutdown();
+}
